@@ -4,20 +4,68 @@ import { applySnapshot, Instance, types } from 'mobx-state-tree';
 export const positionModel = types.model({
 	x: types.number,
 	y: types.number,
-	width: types.string,
-	height: types.string,
 });
+
+const movePositionModel = types
+	.compose(
+		positionModel,
+		types.model({
+			radius: types.number,
+			dx: types.number,
+			dy: types.number,
+		}),
+	)
+	.views((self) => ({
+		getPosition(canvasWidth: number, canvasHeight: number) {
+			const wPercent = canvasWidth / 100;
+			const hPercent = canvasHeight / 100;
+
+			const pxSelf: typeof self = {
+				x: self.x * wPercent,
+				y: self.y * hPercent,
+				radius: self.radius * wPercent,
+				dx: self.dx * wPercent,
+				dy: self.dy * hPercent,
+			};
+			return pxSelf;
+		},
+	}))
+	.actions((self) => ({
+		setMove(isReverse: boolean = false) {
+			if (isReverse) {
+				self.x -= self.dx;
+				self.y -= self.dy;
+			} else {
+				self.x += self.dx;
+				self.y += self.dy;
+			}
+
+			if (self.x + self.radius > 100 || self.x - self.radius < 0) {
+				self.dx = -self.dx;
+			}
+
+			if (
+				self.y + self.radius > 100 - self.radius ||
+				self.y - self.radius < self.radius
+			) {
+				self.dy = -self.dy;
+			}
+		},
+		setMoveSpeed(dx: number, dy: number) {
+			self.dx = self.dx > 0 ? dx : -dx;
+			self.dy = self.dy > 0 ? dy : -dy;
+		},
+	}));
 
 export const heroModel = types
 	.model({
 		id: types.identifierNumber,
-		healthPoints: types.refinement(types.number, (value) => value <= 100),
+		healthPoints: types.number,
 		countShooting: types.number,
-		speed: types.refinement(types.number, (value) => value <= 100),
-		speedShooting: types.refinement(types.number, (value) => value <= 100),
-		color: types.string,
+		speedShooting: types.number,
+		color: types.union(types.literal('blue'), types.literal('red')),
 		colorSpell: types.string,
-		position: positionModel,
+		position: movePositionModel,
 	})
 	.views((self) => ({
 		get getHero() {
@@ -30,7 +78,7 @@ export const heroModel = types
 			return self.countShooting;
 		},
 		get getHeroSpeed() {
-			return self.speed;
+			return Math.round(Math.abs(self.position.dx) * 100);
 		},
 		get getHeroSpeedShooting() {
 			return self.speedShooting;
@@ -41,7 +89,7 @@ export const heroModel = types
 	}))
 	.actions((self) => ({
 		setSpeed(newSpeed: number) {
-			self.speed = newSpeed;
+			self.position.setMoveSpeed(newSpeed / 100, newSpeed / 100);
 		},
 		setSpeedShooting(newSpeed: number) {
 			self.speedShooting = newSpeed;
