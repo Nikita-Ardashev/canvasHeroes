@@ -1,18 +1,18 @@
 import './heroSettings.style.sass';
 import { observer } from 'mobx-react-lite';
-import { TSideHero } from '@/model/types';
+import { IHeroModel } from '@/model/types';
 import Slider from './ui/slider/slider';
 
 interface IHeroStat {
 	isReverse?: boolean;
-	side: TSideHero;
+	hero: IHeroModel;
 }
 
-const HeroSettings = observer(({ side, isReverse = false }: IHeroStat) => {
+const HeroSettings = observer(({ hero, isReverse = false }: IHeroStat) => {
 	return (
 		<div className={'hero-settings' + (isReverse ? ' reverse' : '')}>
-			<Slider side={side} isSpeedMove={true} />
-			<Slider side={side} isSpeedMove={false} />
+			<Slider hero={hero} isSpeedMove={true} />
+			<Slider hero={hero} isSpeedMove={false} />
 		</div>
 	);
 });

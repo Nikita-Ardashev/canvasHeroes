@@ -1,15 +1,13 @@
 import './slider.style.sass';
-import { TSideHero } from '@/model/types';
-import { store } from '@/store/store';
+import { IHeroModel } from '@/model/types';
 import { observer } from 'mobx-react-lite';
 
 interface ISlider {
 	isSpeedMove: boolean;
-	side: TSideHero;
+	hero: IHeroModel;
 }
 
-const Slider = observer(({ side, isSpeedMove }: ISlider) => {
-	const hero = store.getHero(side);
+const Slider = observer(({ hero, isSpeedMove }: ISlider) => {
 	const onChangeSpeed = (e: React.ChangeEvent<HTMLInputElement>): void => {
 		if (isSpeedMove) {
 			hero.setSpeed(Number(e.currentTarget.value));
@@ -26,7 +24,7 @@ const Slider = observer(({ side, isSpeedMove }: ISlider) => {
 			<input
 				type="range"
 				step={1}
-				defaultValue={speed}
+				value={speed}
 				style={{ accentColor: hero.color }}
 				onChange={onChangeSpeed}
 			/>

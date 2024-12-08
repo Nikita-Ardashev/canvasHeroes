@@ -1,37 +1,34 @@
 import { storeModel } from './storeModel';
 
+const DEFAULT_HERO = {
+	healthPoints: 100,
+	speedShooting: 20,
+	countShooting: 0,
+	radius: 5,
+	dx: 0.01,
+	dy: 0.01,
+};
+
 export const store = storeModel.create({
-	heroes: {
-		blueHero: {
+	width: 0,
+	height: 0,
+	heroes: [
+		{
 			id: 0,
-			healthPoints: 100,
 			color: 'blue',
 			colorSpell: 'blue',
-			speedShooting: 20,
-			countShooting: 0,
-			position: {
-				x: 10,
-				y: 50,
-				radius: 5,
-				dx: 0.02,
-				dy: 0.02,
-			},
+			x: 10,
+			y: 20,
+			...DEFAULT_HERO,
 		},
-		redHero: {
+		{
 			id: 1,
-			healthPoints: 100,
 			color: 'red',
 			colorSpell: 'red',
-			speedShooting: 20,
-			countShooting: 0,
-			position: {
-				x: 90,
-				y: 50,
-				radius: 5,
-				dx: 0.02,
-				dy: 0.02,
-			},
+			x: 30,
+			y: 40,
+			...DEFAULT_HERO,
 		},
-	},
-	cursor: { position: { x: 0, y: 0 } },
+	],
+	cursor: { x: 0, y: 0 },
 });
